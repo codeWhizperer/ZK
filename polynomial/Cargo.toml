@@ -8,3 +8,4 @@ edition = "2021"
 
 [dependencies]
 ark-ff = "0.4.2"
+num-traits = "0.2"
