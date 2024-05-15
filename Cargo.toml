@@ -1,3 +1,4 @@
+workspace = { members = ["polynomial"] }
 [package]
 name = "zk-implementation"
 version = "0.1.0"
