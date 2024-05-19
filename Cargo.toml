@@ -1,4 +1,4 @@
-workspace = { members = ["polynomial"] }
+workspace = { members = ["polynomial", "shamir-secret"] }
 [package]
 name = "zk-implementation"
 version = "0.1.0"
