@@ -51,7 +51,7 @@ fn full_evaluation(&self, evaluation_point: &[F]) -> F{
 #[cfg(test)]
 mod test{
    use crate::multilinear::interface::MultiLinearPolynomialEvaluationFormTrait;
-use crate::multilinear::{interface, evaluation_form::MultiLinearPolynomialEvaluationForm};
+use crate::multilinear::{evaluation_form::MultiLinearPolynomialEvaluationForm};
    use ark_ff::MontConfig;
     use ark_ff::{Fp64, MontBackend};
     #[derive(MontConfig)]
