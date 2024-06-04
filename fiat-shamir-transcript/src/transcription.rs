@@ -2,7 +2,7 @@
 // generate proof => generate challenges
 // proof verification
 use sha3::{Keccak256, Digest};
-use ark_ff::PrimeField;
+use ark_ff::{PrimeField, fields::Fp256};
 // Define data structure
 #[derive(Debug,Clone)]
 pub struct Transcript{
@@ -37,10 +37,36 @@ impl Transcript {
 #[cfg(test)]
 mod tests{
     use super::*;
+    #[test]
+      fn test_new_transcript(){
+        let new_transcript = Transcript::new().hasher;
+        let new_keccak_hash = Keccak256::new();
+        assert_eq!(new_transcript.clone().finalize(), new_keccak_hash.finalize(), "should be equal");
+    }
 
-    // fn test_new_transcript(){
-    //     let new_transcript = Transcript::new();
-    //     let new_sha = Keccak256::new();
-    //     // assert_eq!(new_transcript.clone().finalize(), new_sha.finalize(), "should be equal");
-    // }
+    #[test]
+fn test_append(){
+    let mut new_transcript = Transcript::new();
+    new_transcript.append(b"Hello world");
+    let mut result = Keccak256::new();
+    result.update(b"Hello world");
+    assert_eq!(new_transcript.hasher.finalize(), result.finalize());
+}
+
+#[test]
+fn test_sample_challenge(){
+    let mut new_transcript = Transcript::new();
+    new_transcript.append(b"Hello world");
+    let challenge = new_transcript.sample_challenge();
+
+    assert_eq!(challenge.len(),32,"should be 32 byte length"); 
+}
+
+// #[test]
+// fn test_transform_challenge_to_field(){
+//     let mut new_transcript = Transcript::new();
+//     new_transcript.append(b"field data");
+//     let field_element = new_transcript.transform_challenge_to_field();
+//     assert_ne!(field_element, Fp256::ONE, "Field element should not be zero");
+// }
 }
