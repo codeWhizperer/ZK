@@ -32,7 +32,24 @@ pub fn recover_secret<F: PrimeField>(shares_x: Vec<F>, shares_y: Vec<F>) -> F {
     secret
 }
 
-fn main() {}
+fn main() {
+    use ark_ff::{Fp64, MontBackend, MontConfig};
+    #[derive(MontConfig)]
+    #[modulus = "17"]
+    #[generator = "3"]
+    pub struct FqConfig;
+    pub type Fq = Fp64<MontBackend<FqConfig, 1>>;
+    let threshold = 3;
+    let members = 5;
+    let secret = Fq::from(123u64);
+
+    let (shares_x, shares_y) = create_shamir_secret::<Fq>(threshold, members, secret);
+    let recovered_secret = recover_secret(shares_x, shares_y);
+
+    println!("Recovered secret: {:?}", recovered_secret);
+    println!("secret: {:?}", secret);
+
+}
 
 #[cfg(test)]
 mod tests {
