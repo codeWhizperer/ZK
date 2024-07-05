@@ -15,3 +15,8 @@ pub trait ProverInterface<F:PrimeField>{
      fn compute_round_zero_poly(&mut self);
      fn sum_check_proof(&mut self)-> SumCheckProof<F>;
 }
+
+pub trait VerifierInterface<F: PrimeField> {
+     /// This function verifies the sum check proof
+     fn verify(&mut self, proof: &SumCheckProof<F>) -> bool;
+ }
