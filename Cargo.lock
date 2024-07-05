@@ -134,14 +134,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a47c1c47d2f5964e29c61246e81db715514cd532db6b5116a25ea3c03d6780a2"
 
 [[package]]
-name = "fiat-shamir-transcription"
-version = "0.1.0"
-dependencies = [
- "ark-ff",
- "sha3",
-]
-
-[[package]]
 name = "generic-array"
 version = "0.14.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -318,6 +310,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "sum-check"
+version = "0.1.0"
+dependencies = [
+ "ark-ff",
+ "polynomial",
+ "transcript",
+]
+
+[[package]]
 name = "syn"
 version = "1.0.109"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -337,6 +338,14 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
+]
+
+[[package]]
+name = "transcript"
+version = "0.1.0"
+dependencies = [
+ "ark-ff",
+ "sha3",
 ]
 
 [[package]]

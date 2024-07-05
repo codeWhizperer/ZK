@@ -1,14 +1,14 @@
-use ark_ff::PrimeField;
+use ark_ff::{PrimeField,BigInteger};
 
 use crate::multilinear::interface::MultiLinearPolynomialEvaluationFormTrait;
 
 use super::utils::pick_pairs_with_index;
+use std::ops::{Add,AddAssign};
 
-
-#[derive(Debug, Clone, PartialEq)]
-struct MultiLinearPolynomialEvaluationForm<F:PrimeField>{
-    number_of_variables: usize,
-    evaluations: Vec<F>
+#[derive(Debug, Clone, PartialEq,Default)]
+pub struct MultiLinearPolynomialEvaluationForm<F:PrimeField>{
+  pub  number_of_variables: usize,
+  pub  evaluations: Vec<F>
 }
 
 
@@ -45,12 +45,76 @@ fn full_evaluation(&self, evaluation_point: &[F]) -> F{
     polynomial_result
 }
 
+fn generate_variable_names(&self) -> Vec<String>{
+    (0..self.number_of_variables).map(|i|(b'a' + i as u8) as char).map(|c|c.to_string()).collect()
 }
+
+ fn zero(num_vars: usize) -> Self {
+   let addictive = MultiLinearPolynomialEvaluationForm::new(vec![F::zero(); 1 << num_vars]);
+   addictive
+}
+fn to_bytes(&self) -> Vec<u8> {
+    let mut m_ploy_bytes = Vec::new();
+
+    for eval in &self.evaluations {
+        let big_int = eval.into_bigint().to_bytes_be();
+        m_ploy_bytes.extend_from_slice(&big_int);
+    }
+
+    m_ploy_bytes
+}
+
+fn evaluate(&self, point: &Vec<F>) -> Option<F> {
+    let mut eval_result = None;
+    let mut eval_polynomial = self.clone();
+
+    for i in 0..point.len() {
+        eval_polynomial = eval_polynomial.partial_evaluation(point[i], 0);
+        eval_result = Some(eval_polynomial.evaluations[0]);
+    }
+
+    eval_result
+}
+}
+
+
+
+impl<F: PrimeField> Add for MultiLinearPolynomialEvaluationForm<F> {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self {
+        let mut new_evaluations = Vec::new();
+        if self.number_of_variables != other.number_of_variables {
+            panic!("The number of variables in the two polynomials must be the same");
+        }
+
+        for i in 0..self.evaluations.len() {
+            new_evaluations.push(self.evaluations[i] + other.evaluations[i]);
+        }
+
+        Self::new(new_evaluations)
+    }
+}
+
+impl<F: PrimeField> AddAssign for MultiLinearPolynomialEvaluationForm<F> {
+    fn add_assign(&mut self, other: Self) {
+        // if self.number_of_variables != other.number_of_variables {
+        //     panic!("The number of variables in the two polynomials must be the same");
+        // }
+
+        for i in 0..self.evaluations.len() {
+            self.evaluations[i] += other.evaluations[i];
+        }
+    }
+}
+
 
 
 #[cfg(test)]
 mod test{
-   use crate::multilinear::interface::MultiLinearPolynomialEvaluationFormTrait;
+   use std::vec;
+
+use crate::multilinear::interface::MultiLinearPolynomialEvaluationFormTrait;
 use crate::multilinear::{evaluation_form::MultiLinearPolynomialEvaluationForm};
    use ark_ff::MontConfig;
     use ark_ff::{Fp64, MontBackend};
@@ -73,7 +137,7 @@ use crate::multilinear::{evaluation_form::MultiLinearPolynomialEvaluationForm};
         let polynomial = MultiLinearPolynomialEvaluationForm::new(evaluations);
         let evaluation_point = Fq::from(5);
         let new_polynomial = MultiLinearPolynomialEvaluationForm::partial_evaluation(&polynomial, evaluation_point,0);
-        let expected_polynomial = MultiLinearPolynomialEvaluationForm::new(vec![Fq::from(15), Fq::from(4)]);
+        let expected_polynomial = MultiLinearPolynomialEvaluationForm::new(vec![Fq::from(-2), Fq::from(21)]);
         assert_eq!(new_polynomial, expected_polynomial);
     }
 
@@ -93,4 +157,43 @@ use crate::multilinear::{evaluation_form::MultiLinearPolynomialEvaluationForm};
     let evaluation_result = MultiLinearPolynomialEvaluationForm::full_evaluation(&polynomial, &evaluation_points);
     assert_eq!(evaluation_result, Fq::from(48));
     }
+
+#[test]
+fn test_partial_evaluation_2(){
+    let evaluations = vec![
+        Fq::from(3),
+        Fq::from(9),
+        Fq::from(7),
+        Fq::from(13),
+        Fq::from(6),
+        Fq::from(12),
+        Fq::from(10),
+        Fq::from(18),
+    ];
+
+    let evaluations2 = vec![
+        Fq::from(3),
+        Fq::from(9),
+        Fq::from(7),
+        Fq::from(13),
+        Fq::from(6),
+        Fq::from(12),
+        Fq::from(10),
+        Fq::from(18),
+    ];
+let new_poly = MultiLinearPolynomialEvaluationForm::new(evaluations);
+let points = vec![Fq::from(2), Fq::from(3), Fq::from(1)];
+
+let evaluation_result = MultiLinearPolynomialEvaluationForm::full_evaluation(&new_poly, &points);
+
+assert_eq!(evaluation_result, Fq::from(39));
+
+let poly2 = MultiLinearPolynomialEvaluationForm::new(evaluations2);
+let point2 = vec![Fq::from(3), Fq::from(2)];
+let partial_eval = MultiLinearPolynomialEvaluationForm::partial_evaluation(&poly2, Fq::from(3), 1);
+let expected = MultiLinearPolynomialEvaluationForm::full_evaluation(&partial_eval, &point2);
+assert_eq!(expected, Fq::from(72));
 }
+    
+}
+ 
