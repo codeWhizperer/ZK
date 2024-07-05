@@ -2,9 +2,9 @@
 // generate proof => generate challenges
 // proof verification
 use sha3::{Keccak256, Digest};
-use ark_ff::{PrimeField, fields::Fp256};
+use ark_ff::{PrimeField};
 // Define data structure
-#[derive(Debug,Clone)]
+#[derive(Debug,Clone,Default)]
 pub struct Transcript{
    pub hasher:Keccak256
 }
@@ -30,8 +30,6 @@ impl Transcript {
    pub fn transform_challenge_to_field<F:PrimeField>(&mut self) -> F{
     F::from_random_bytes(&self.hasher.finalize_reset()).unwrap()
    }
-
-// todo!()-> implement transcript with blake2
 }
 
 #[cfg(test)]

@@ -2,7 +2,7 @@
 //IMPORTS
 ////////////////////////////
 
-use std::fmt::{Display, Formatter, Result};
+use std::fmt::{Display};
 use ark_ff::PrimeField;
 
 
