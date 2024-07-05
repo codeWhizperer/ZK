@@ -1,4 +1,5 @@
 use crate::{interface::ProverInterface, util::boolean_hypercube};
+use crate::verifier::{Verifier};
 use ark_ff::PrimeField;
 use polynomial::multilinear::{
 	evaluation_form::MultiLinearPolynomialEvaluationForm,
@@ -6,7 +7,6 @@ use polynomial::multilinear::{
 };
 use crate::interface::SumCheckProof;
 use transcript::transcription::Transcript;
-
 
 #[derive(Clone, Debug)]
 pub struct Prover<F: PrimeField> {
@@ -83,6 +83,7 @@ impl<F: PrimeField> ProverInterface<F> for Prover<F> {
 
 
     fn sum_check_proof(&mut self) -> SumCheckProof<F> {
+    //    let sum = self.calculate_sum();
         self.compute_round_zero_poly();
         let mut all_random_response = Vec::new();
         for i in 1..self.polynomial.number_of_variables {
@@ -104,7 +105,6 @@ impl<F: PrimeField> ProverInterface<F> for Prover<F> {
             self.transcript.append(&bh_partials.to_bytes());
             self.round_poly.push(bh_partials);
         }
-    
         SumCheckProof {
             polynomial: self.polynomial.clone(),
             round_poly: self.round_poly.clone(),
@@ -118,6 +118,8 @@ impl<F: PrimeField> ProverInterface<F> for Prover<F> {
 
 #[cfg(test)]
 mod tests{
+use crate::interface::VerifierInterface;
+
 use super::*;
 use ark_ff::MontConfig;
 use ark_ff::{Fp64, MontBackend};
@@ -147,6 +149,25 @@ fn test_calculate_sum(){
 }
 
 #[test]
+fn test_calculate_sum2(){
+    let poly = MultiLinearPolynomialEvaluationForm::new(
+            vec![
+                Fq::from(0),
+                Fq::from(0),
+                Fq::from(2),
+                Fq::from(7),
+                Fq::from(3),
+                Fq::from(3),
+                Fq::from(5),
+                Fq::from(11),
+            ],
+    );
+    let mut poly = Prover::new(poly);
+    let sum = Prover::calculate_sum(&mut poly);
+    assert_eq!(sum,Fq::from(31))
+}
+
+#[test]
 fn test_compute(){
     let poly = MultiLinearPolynomialEvaluationForm::new(
         vec![
@@ -167,6 +188,27 @@ fn test_compute(){
         poly.round_0_poly.evaluations,
         vec![Fq::from(2), Fq::from(10)]
     );
+}
+
+#[test]
+fn test_compute_round_zero_poly_2() {
+    let poly = MultiLinearPolynomialEvaluationForm::new(
+        vec![
+            Fq::from(0),
+            Fq::from(0),
+            Fq::from(2),
+            Fq::from(7),
+            Fq::from(3),
+            Fq::from(3),
+            Fq::from(5),
+            Fq::from(11),
+        ],
+    );
+    let mut prover = Prover::new(poly);
+    prover.compute_round_zero_poly();
+    let sum = prover.round_0_poly.evaluate(&vec![Fq::from(1)]).unwrap()
+        + prover.round_0_poly.evaluate(&vec![Fq::from(0)]).unwrap();
+    assert_eq!(sum, Fq::from(31));
 }
 
 #[test]
@@ -214,4 +256,26 @@ let sum =  prover.round_0_poly.evaluate(&vec![Fq::from(1)]).unwrap() + prover.ro
 assert_eq!(sum, Fq::from(12))
 }
 
+
+// #[test]
+// fn test_sum_check_proof() {
+//     let poly = MultiLinearPolynomialEvaluationForm::new(
+//         vec![
+//             Fq::from(0),
+//             Fq::from(0),
+//             Fq::from(0),
+//             Fq::from(2),
+//             Fq::from(2),
+//             Fq::from(2),
+//             Fq::from(2),
+//             Fq::from(4),
+//         ]
+//     );
+//     let mut prover = Prover::new(poly);
+//     prover.calculate_sum();
+//     let proof = prover.sum_check_proof();
+//     let mut verifer = Verifier::new();
+//     assert!(verifer.verify(&proof));
+// }
+// }
 }
