@@ -1,4 +1,4 @@
-use ark_ff::PrimeField;
+use ark_ff::{PrimeField,BigInteger};
 
 
 pub fn boolean_hypercube<F: PrimeField>(n:usize) -> Vec<Vec<F>>{
@@ -16,4 +16,8 @@ pub fn boolean_hypercube<F: PrimeField>(n:usize) -> Vec<Vec<F>>{
         result.push(current)
     }
     result
+}
+
+pub fn convert_field_to_byte<F: PrimeField>(element: &F) -> Vec<u8> {
+    element.into_bigint().to_bytes_be()
 }

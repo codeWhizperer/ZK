@@ -1,15 +1,10 @@
-
-// generate proof => generate challenges
-// proof verification
 use sha3::{Keccak256, Digest};
 use ark_ff::{PrimeField};
-// Define data structure
 #[derive(Debug,Clone,Default)]
 pub struct Transcript{
    pub hasher:Keccak256
 }
 
-// Hash function integration
 impl Transcript {
     pub fn new() -> Self{
         Self { hasher: Keccak256::new()  }
@@ -28,9 +23,12 @@ impl Transcript {
    } 
 
    pub fn transform_challenge_to_field<F:PrimeField>(&mut self) -> F{
-    F::from_random_bytes(&self.hasher.finalize_reset()).unwrap()
+    F::from_be_bytes_mod_order(&self.sample_challenge())
+
    }
 }
+
+
 
 #[cfg(test)]
 mod tests{
