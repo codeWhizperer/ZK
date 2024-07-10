@@ -1,6 +1,5 @@
-workspace = { members = [ "transcript","polynomial", "shamir-secret", "sum-check", "gkr"] }
 [package]
-name = "zk-implementation"
+name = "gkr"
 version = "0.1.0"
 edition = "2021"
 
