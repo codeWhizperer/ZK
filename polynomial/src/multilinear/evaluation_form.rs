@@ -83,6 +83,9 @@ impl<F: PrimeField> MultiLinearPolynomialEvaluationFormTrait<F>
 		let second_half: F = self.evaluations[mid..].iter().fold(F::zero(), |acc, &x| acc + x);
 		Self::new(vec![first_half, second_half])
 	}
+	 fn is_zero(&self) -> bool {
+        self.evaluations.iter().all(|&eval| eval.is_zero())
+    }
 }
 
 impl<F: PrimeField> Add for MultiLinearPolynomialEvaluationForm<F> {
