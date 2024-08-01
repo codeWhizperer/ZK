@@ -218,5 +218,26 @@ mod tests {
 		let (add_i_mle, mul_i_mle) = gkr_circuit.add_i_mul_ext::<Fq>(1);
 		assert_eq!(mul_i_mle.is_zero(), false);
 		assert_eq!(add_i_mle.is_zero(), false);
+
+		assert_eq!(
+			add_i_mle.evaluation(&vec![
+				Fq::from(0),
+				Fq::from(0),
+				Fq::from(0),
+				Fq::from(0),
+				Fq::from(1)
+			]),
+			Fq::from(1u32)
+		);
+		assert_eq!(
+			mul_i_mle.evaluation(&vec![
+				Fq::from(1),
+				Fq::from(1),
+				Fq::from(0),
+				Fq::from(1),
+				Fq::from(1)
+			]),
+			Fq::from(1u32)
+		);
 	}
 }

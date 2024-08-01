@@ -16,7 +16,6 @@ pub fn size_of_number_of_variable_at_each_layer(layer_index: usize) -> usize {
 
 mod tests {
 	use super::*;
-
 	#[test]
 	fn test_label_binary_and_to_decimal() {
 		assert_eq!(label_to_binary_to_decimal(0, 0, 1), 1);
