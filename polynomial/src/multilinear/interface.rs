@@ -8,4 +8,5 @@ pub trait MultiLinearPolynomialEvaluationFormTrait<F: PrimeField> {
 	fn zero(num_vars: usize) -> Self;
 	fn to_bytes(&self) -> Vec<u8>;
 	fn split_poly(&mut self) -> MultiLinearPolynomialEvaluationForm<F> ;
+	fn is_zero(&self) -> bool;
 }

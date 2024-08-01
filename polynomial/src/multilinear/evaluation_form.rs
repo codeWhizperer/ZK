@@ -83,6 +83,9 @@ impl<F: PrimeField> MultiLinearPolynomialEvaluationFormTrait<F>
 		let second_half: F = self.evaluations[mid..].iter().fold(F::zero(), |acc, &x| acc + x);
 		Self::new(vec![first_half, second_half])
 	}
+	fn is_zero(&self) -> bool {
+		self.evaluations.iter().all(|&eval| eval.is_zero())
+	}
 }
 
 impl<F: PrimeField> Add for MultiLinearPolynomialEvaluationForm<F> {
@@ -206,20 +209,21 @@ mod test {
 	}
 
 	#[test]
-    fn test_split_poly() {
-        let mut poly = MultiLinearPolynomialEvaluationForm::new(vec![
-            Fq::from(0),
-            Fq::from(0),
-            Fq::from(0),
-            Fq::from(2),
-            Fq::from(2),
-            Fq::from(2),
-            Fq::from(2),
-            Fq::from(4),
-        ]);
+	fn test_split_poly() {
+		let mut poly = MultiLinearPolynomialEvaluationForm::new(vec![
+			Fq::from(0),
+			Fq::from(0),
+			Fq::from(0),
+			Fq::from(2),
+			Fq::from(2),
+			Fq::from(2),
+			Fq::from(2),
+			Fq::from(4),
+		]);
 
-        let evaluation = poly.split_poly();
-        let expected_polynomial1 = MultiLinearPolynomialEvaluationForm::new(vec![Fq::from(2), Fq::from(10)]);
-        assert_eq!(evaluation, expected_polynomial1);
-    }
+		let evaluation = poly.split_poly();
+		let expected_polynomial1 =
+			MultiLinearPolynomialEvaluationForm::new(vec![Fq::from(2), Fq::from(10)]);
+		assert_eq!(evaluation, expected_polynomial1);
+	}
 }
