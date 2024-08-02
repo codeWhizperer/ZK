@@ -12,4 +12,6 @@ pub trait ComposedMultilinearInterface<F: PrimeField> {
     fn elementwise_addition(&self) -> Vec<F>;
     fn partial_evaluation(&self, evaluation_point: F, variable_index: usize) -> ComposedMultiLinearPolynomial<F>;
     fn evaluation(&self, points:&[F]) -> F;
+    fn to_bytes(&self) -> Vec<u8>;
+    fn max_degree(&self) -> usize;
 }

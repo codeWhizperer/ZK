@@ -89,6 +89,19 @@ impl<F: PrimeField> ComposedMultilinearInterface<F> for ComposedMultiLinearPolyn
 			})
 			.collect()
 	}
+	fn to_bytes(&self) -> Vec<u8> {
+        let mut bytes = vec![];
+
+        for poly in &self.multilineal_polynomial {
+            bytes.extend_from_slice(&poly.to_bytes());
+        }
+
+        bytes
+    }
+
+	fn max_degree(&self) -> usize {
+	self.multilineal_polynomial.len()
+}
 }
 
 #[cfg(test)]
