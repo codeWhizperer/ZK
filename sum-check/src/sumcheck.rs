@@ -42,16 +42,16 @@ impl<F: PrimeField> SumCheckInterface<F> for SumCheck<F> {
 	}
 
 	fn sum_check_proof(&mut self) -> SumCheckProof<F> {
-        let mut uni_polys = vec![];
+        let mut uni_polys: Vec<MultiLinearPolynomialEvaluationForm<F>> = vec![];
 
-        let mut transcript = Transcript::new();
+        let mut transcript: Transcript = Transcript::new();
         let poly_sum_bytes = convert_field_to_byte(&self.sum);
         transcript.append(&poly_sum_bytes);
 
         let mut challenges: Vec<F> = vec![];
         let mut current_poly: MultiLinearPolynomialEvaluationForm<F> = self.polynomial.clone();
         for _ in 0..self.polynomial.number_of_variables {
-            let uni_poly = current_poly.split_poly();
+            let uni_poly: MultiLinearPolynomialEvaluationForm<F> = current_poly.split_poly();
             transcript.append(&uni_poly.to_bytes());
             uni_polys.push(uni_poly);
             let random_r: F = transcript.transform_challenge_to_field::<F>();
