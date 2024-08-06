@@ -21,3 +21,11 @@ pub fn boolean_hypercube<F: PrimeField>(n:usize) -> Vec<Vec<F>>{
 pub fn convert_field_to_byte<F: PrimeField>(element: &F) -> Vec<u8> {
     element.into_bigint().to_bytes_be()
 }
+
+pub fn transform_round_poly_to_uni_poly<F: PrimeField>(round_poly: &Vec<F>) -> Vec<(F, F)> {
+    round_poly
+        .iter()
+        .enumerate()
+        .map(|(i, val)| (F::from(i as u64), *val))
+        .collect()
+}
