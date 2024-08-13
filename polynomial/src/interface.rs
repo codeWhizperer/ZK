@@ -6,4 +6,6 @@ pub trait UnivariatePolynomialTrait<F: PrimeField> {
     fn evaluate(&self, point: F) -> F;
     fn interpolate(points: &[(F, F)]) -> UnivariatePolynomial<F>;
     fn degree(&self) -> F;
+    fn zero() -> Self;
+    fn to_bytes(&self) -> Vec<u8>;
 }

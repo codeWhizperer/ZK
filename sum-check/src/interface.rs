@@ -15,7 +15,7 @@ pub trait SumCheckInterface<F:PrimeField>{
 }
 
 pub trait ComposedSumCheckInterface<F:PrimeField>{
-    fn calculate_sum(&mut self);
+    fn calculate_sum(&mut self)->F;
     fn prover(&self) -> (ComposedSumCheckProof<F>, Vec<F>);
     fn verify(&self, proof: &ComposedSumCheckProof<F>) -> bool;
 }
