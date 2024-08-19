@@ -1,4 +1,5 @@
 use ark_ff::PrimeField;
+use interface::UnivariatePolynomialTrait;
 use polynomial::*;
 use std::vec::Vec;
 
@@ -19,7 +20,7 @@ pub fn create_shamir_secret<F: PrimeField + Copy>(
     let mut shares_y = Vec::with_capacity(members);
     for i in 1..members {
         let x = F::from(i as u64);
-        let y = poly.evaluate(&x);
+        let y = poly.evaluate(x);
         shares_x.push(x);
         shares_y.push(y);
     }

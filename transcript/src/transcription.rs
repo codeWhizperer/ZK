@@ -26,6 +26,14 @@ impl Transcript {
     F::from_be_bytes_mod_order(&self.sample_challenge())
 
    }
+
+   pub fn sample_n_as_field_element<F:PrimeField>(&mut self, n:usize)->Vec<F>{
+    let mut response = Vec::new();
+    for _ in 0..n{
+        response.push(F::from_be_bytes_mod_order(&self.sample_challenge()));
+    }
+    response
+   }
 }
 
 

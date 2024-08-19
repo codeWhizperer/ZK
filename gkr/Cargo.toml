@@ -9,3 +9,4 @@ edition = "2021"
 ark-ff = "0.4.2"
 polynomial = {path = "../polynomial"}
 transcript = {path = "../transcript"}
+sum-check =   {path = "../sum-check"}

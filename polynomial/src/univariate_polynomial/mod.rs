@@ -6,13 +6,12 @@ use std::{
 	ops::{Add, Mul},
 };
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Clone, PartialEq, Eq, Hash, Default, Debug)]
 pub struct UnivariateMonomial<F: PrimeField> {
 	pub coeff: F,
 	pub pow: F,
 }
-
-#[derive(Debug,Clone, PartialEq)]
+#[derive(Clone, PartialEq, Eq, Hash, Default, Debug)]
 pub struct UnivariatePolynomial<F: PrimeField> {
 	pub monomial: Vec<UnivariateMonomial<F>>,
 }
@@ -137,7 +136,7 @@ impl<F: PrimeField> Add for UnivariatePolynomial<F> {
 		let mut rhs_mn = rhs_iter.next();
 
 		while lhs_mn.is_some() || rhs_mn.is_some() {
-			match (lhs_mn, rhs_mn) {
+			match (lhs_mn.clone(), rhs_mn.clone()) {
 				(Some(l), Some(r)) => {
 					if l.pow == r.pow {
 						result_monomials

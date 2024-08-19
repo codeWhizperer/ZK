@@ -28,3 +28,21 @@ pub fn pick_pairs_with_index(
 
     result
 }
+pub fn compute_number_of_variables(n: u128) -> (u128, u128) {
+    if n == 0 {
+        return (0, 0);
+    }
+    if n == 1 {
+        return (1, 2);
+    }
+
+    let mut log_base_2 = n.ilog2();
+    let mut n_power_2 = 1 << log_base_2;
+
+    if n != n_power_2 {
+        log_base_2 += 1;
+        n_power_2 = 1 << log_base_2;
+    }
+
+    (log_base_2 as u128, n_power_2)
+}
