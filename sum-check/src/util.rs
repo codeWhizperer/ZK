@@ -29,3 +29,11 @@ pub fn transform_round_poly_to_uni_poly<F: PrimeField>(round_poly: &Vec<F>) -> V
         .map(|(i, val)| (F::from(i as u64), *val))
         .collect()
 }
+
+pub fn vec_to_bytes<F: PrimeField>(poly: &Vec<F>) -> Vec<u8> {
+    let mut bytes = Vec::new();
+    for p in poly {
+        bytes.extend_from_slice(&p.into_bigint().to_bytes_be());
+    }
+    bytes
+}

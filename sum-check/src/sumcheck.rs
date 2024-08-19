@@ -56,7 +56,7 @@ impl<F: PrimeField> SumCheckInterface<F> for SumCheck<F> {
             uni_polys.push(uni_poly);
             let random_r: F = transcript.transform_challenge_to_field::<F>();
             challenges.push(random_r);
-            current_poly = current_poly.partial_evaluation(random_r, 0);
+            current_poly = current_poly.partial_evaluation(&random_r, &0);
         
         }
 
