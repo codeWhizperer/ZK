@@ -15,13 +15,14 @@ pub trait SumCheckInterface<F:PrimeField>{
 }
 
 pub trait ComposedSumCheckInterface<F:PrimeField>{
-    fn calculate_sum(&mut self)->F;
+    // fn calculate_sum(&mut self)->F;
+    fn calculate_sum(poly: &ComposedMultiLinearPolynomial<F>) -> F ;
     fn prover(&self) -> (ComposedSumCheckProof<F>, Vec<F>);
     fn verify(&self, proof: &ComposedSumCheckProof<F>) -> bool;
 }
 
 /// This struct is used to store the sum check proof
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone,PartialEq,Eq,Hash)]
 pub struct ComposedSumCheckProof<F: PrimeField> {
     pub polynomial: ComposedMultiLinearPolynomial<F>,
     pub sum: F,

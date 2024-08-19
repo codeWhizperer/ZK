@@ -9,3 +9,9 @@ pub trait UnivariatePolynomialTrait<F: PrimeField> {
     fn zero() -> Self;
     fn to_bytes(&self) -> Vec<u8>;
 }
+
+pub trait MLETrait<F: PrimeField> {
+    fn new(evaluations: Vec<F>) -> Self;
+    fn partial_evaluation(&self, eval_point: F, variable_index: usize) -> Self;
+    fn evaluation(&self, evaluation_points: &[F]) -> F;
+}

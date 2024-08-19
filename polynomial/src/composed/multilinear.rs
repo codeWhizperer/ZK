@@ -4,7 +4,7 @@ use crate::multilinear::interface::MultiLinearPolynomialEvaluationFormTrait;
 
 use ark_ff::PrimeField;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone,PartialEq, Eq,Hash)]
 pub struct ComposedMultiLinearPolynomial<F: PrimeField> {
 	pub multilineal_polynomial: Vec<MultiLinearPolynomialEvaluationForm<F>>,
 }
@@ -61,7 +61,7 @@ impl<F: PrimeField> ComposedMultilinearInterface<F> for ComposedMultiLinearPolyn
 	) -> ComposedMultiLinearPolynomial<F> {
 		let mut partial_eval_result = Vec::new();
 		for mle in &self.multilineal_polynomial {
-			partial_eval_result.push(mle.partial_evaluation(evaluation_point, variable_index));
+			partial_eval_result.push(mle.partial_evaluation(&evaluation_point, &variable_index));
 		}
 		ComposedMultiLinearPolynomial { multilineal_polynomial: partial_eval_result }
 	}
