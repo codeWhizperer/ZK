@@ -24,32 +24,15 @@ pub fn evaluate_wire(&self, point: &[F]) -> Option<F>{
 }
 
 pub fn partial_evaluate_wire(&self, point: F, variable_index:usize) -> Self{
- let add_i_partial: MultiLinearPolynomialEvaluationForm<F> = self.add_i.partial_evaluation(point, variable_index);
- let mul_i_partial: MultiLinearPolynomialEvaluationForm<F> = self.mul_i.partial_evaluation(point, variable_index);
- let w_b_partial: MultiLinearPolynomialEvaluationForm<F> = self.w_b.partial_evaluation(point, variable_index);
- let w_c_partial: MultiLinearPolynomialEvaluationForm<F> = self.w_c.partial_evaluation(point, variable_index);
+ let add_i_partial: MultiLinearPolynomialEvaluationForm<F> = self.add_i.partial_evaluation(&point, &variable_index);
+ let mul_i_partial: MultiLinearPolynomialEvaluationForm<F> = self.mul_i.partial_evaluation(&point,&variable_index);
+ let w_b_partial: MultiLinearPolynomialEvaluationForm<F> = self.w_b.partial_evaluation(&point, &variable_index);
+ let w_c_partial: MultiLinearPolynomialEvaluationForm<F> = self.w_c.partial_evaluation(&point, &variable_index);
 
  Self { add_i: add_i_partial, mul_i: mul_i_partial, w_b: w_b_partial, w_c: w_c_partial }
 
 }
 
-// pub fn partial_evaluate_wires(&self, points: &[F], variable_indices: &[usize]) -> Self {
-//   if points.len() != variable_indices.len() {
-//       panic!(
-//           "The length of points and variable_indices should be the same: {}, {}",
-//           points.len(),
-//           variable_indices.len()
-//       );
-//   }
-
-//   let mut evaluation_structure = self.clone();
-
-//   for i in 0..points.len() {
-//       evaluation_structure = evaluation_structure.partial_evaluate_wire(points[i], variable_indices[i]);
-//   }
-
-//   evaluation_structure
-// }
 
 }
 

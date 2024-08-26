@@ -1,5 +1,5 @@
-use crate::datastructure::{Circuit, CircuitEvaluation, CircuitLayer, Gate, GateType};
-use crate::utils::{label_to_binary_to_decimal, size_of_number_of_variable_at_each_layer};
+use crate::datastructure::{Circuit, CircuitLayer, Gate, GateType};
+use crate::utils::label_to_binary_to_decimal;
 use ark_ff::PrimeField;
 use polynomial::multilinear::{
 	evaluation_form::MultiLinearPolynomialEvaluationForm,
@@ -11,7 +11,7 @@ impl Circuit {
 		Self { layers }
 	}
 
-	pub fn evaluate<F: PrimeField>(&self, input: &[F]) -> CircuitEvaluation<F>
+	pub fn evaluate<F: PrimeField>(&self, input: &[F]) -> Vec<Vec<F>>
 	where
 		F: Add<Output = F> + Mul<Output = F> + Copy,
 	{
@@ -35,7 +35,7 @@ impl Circuit {
 		}
 
 		layers.reverse();
-		CircuitEvaluation { layers }
+		layers
 	}
 
 	pub fn add_i(&self, layer_index: usize, gate_index: usize, b: usize, c: usize) -> bool {
@@ -157,7 +157,7 @@ mod tests {
 
 		let layers = circuit.evaluate(&[Fq::from(3), Fq::from(2), Fq::from(3), Fq::from(1)]);
 		assert_eq!(
-			layers.layers,
+			layers,
 			vec![
 				vec![Fq::from(36), Fq::from(6)],
 				vec![Fq::from(9), Fq::from(4), Fq::from(6), Fq::from(1)],
@@ -181,7 +181,7 @@ mod tests {
 			vec![Fq::from(1u32), Fq::from(2u32), Fq::from(3u32), Fq::from(4u32)],
 		];
 
-		assert_eq!(evaluation.layers, expected_output);
+		assert_eq!(evaluation, expected_output);
 	}
 
 	#[test]

@@ -1,6 +1,6 @@
 use ark_ff::PrimeField;
 use polynomial::multilinear::evaluation_form::MultiLinearPolynomialEvaluationForm;
-use sum_check::multi_composed_sumcheck::ComposedSumcheckProof;
+use sum_check::multi_composedsumcheck::ComposedSumcheckProof;
 #[derive(Debug, Clone,PartialEq)]
 pub enum GateType {
 	Add,
@@ -26,7 +26,7 @@ pub struct CircuitEvaluation<F: PrimeField> {
 #[derive(Clone, PartialEq, Eq, Hash, Default, Debug)]
 pub struct GKRProof<F: PrimeField> {
  pub   sumcheck_proofs: Vec<ComposedSumcheckProof<F>>,
-  pub  wb_s: Vec<F>,    // w_mle for layer one onward for rb
-  pub  wc_s: Vec<F>,    // w_mle for layer one onward for rc
+  pub  w_i_b: Vec<F>,    // w_mle for layer one onward for rb
+  pub  w_i_c: Vec<F>,    // w_mle for layer one onward for rc
   pub  w_0_mle: MultiLinearPolynomialEvaluationForm<F>, // w_mle for layer
 }
