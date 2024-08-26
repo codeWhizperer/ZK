@@ -1,8 +1,6 @@
-use ark_ff::PrimeField;
 use gkr::{
 	datastructure::{Circuit, CircuitLayer, Gate, GateType},
 };
-use polynomial::multilinear::evaluation_form::MultiLinearPolynomialEvaluationForm;
 
 fn main() {
 	use ark_ff::MontConfig;
