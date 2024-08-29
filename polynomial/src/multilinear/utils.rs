@@ -1,4 +1,3 @@
-use ark_ff::PrimeField;
 
 pub fn pick_pairs_with_index(
     num_of_evaluations: usize,

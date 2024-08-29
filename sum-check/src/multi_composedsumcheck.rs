@@ -1,4 +1,4 @@
-use super::composed_sumcheck::ComposedSumcheck;
+use super::composedsumcheck::ComposedSumcheck;
 use crate::util::{convert_field_to_byte, transform_round_poly_to_uni_poly, vec_to_bytes};
 use ark_ff::{PrimeField};
 use polynomial::composed::interface::ComposedMultilinearInterface;
@@ -172,7 +172,6 @@ impl MultiComposedSumcheckVerifier {
             challenges.push(challenge);
 
             let eval_p0_p1 = round_poly.evaluate(F::zero()) + round_poly.evaluate(F::one());
-            // println!("eval_p0_p1={:?}, claimed_Sum={:?}", eval_p0_p1, claimed_sum);
 
             if claimed_sum != eval_p0_p1 {
                 return Err("Verification failed");
@@ -192,12 +191,9 @@ impl MultiComposedSumcheckVerifier {
 
 #[cfg(test)]
 mod tests {
-    use crate::sumcheck;
-
     use super::*;
     use ark_ff::MontConfig;
     use ark_ff::{Fp64, MontBackend};
-    use polynomial::interface::MLETrait;
     use polynomial::multilinear::evaluation_form::MultiLinearPolynomialEvaluationForm;
     use polynomial::multilinear::interface::MultiLinearPolynomialEvaluationFormTrait;
 
