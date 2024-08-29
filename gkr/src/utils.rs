@@ -39,19 +39,19 @@ pub fn gen_w_mle<F: PrimeField>(
 pub fn perform_layer_one_prove_sumcheck<F: PrimeField>(
 	add_mle: &MultiLinearPolynomialEvaluationForm<F>,
 	mul_mle: &MultiLinearPolynomialEvaluationForm<F>,
-	w_1_mle: &MultiLinearPolynomialEvaluationForm<F>,
+	w_mle: &MultiLinearPolynomialEvaluationForm<F>,
 	n_r: &Vec<F>,
 	sum: &F,
 	transcript: &mut Transcript,
 	sumcheck_proofs: &mut Vec<ComposedSumcheckProof<F>>,
-	wb_s: &mut Vec<F>,
-	wc_s: &mut Vec<F>,
+	w_i_b: &mut Vec<F>,
+	w_i_c: &mut Vec<F>,
 ) -> (F, F, F, Vec<F>, Vec<F>) {
 	let add_rbc = add_mle.partial_evaluations(&n_r, &vec![0; n_r.len()]);
 	let mul_rbc = mul_mle.partial_evaluations(&n_r, &vec![0; n_r.len()]);
 
-	let wb = w_1_mle.clone();
-	let wc = w_1_mle;
+	let wb = w_mle.clone();
+	let wc = w_mle;
 
 	let wb_add_wc = wb.add_distinct(&wc);
 	let wb_mul_wc = wb.mul_distinct(&wc);
@@ -68,8 +68,8 @@ pub fn perform_layer_one_prove_sumcheck<F: PrimeField>(
 
 	let eval_wb = wb.evaluation(b);
 	let eval_wc = wc.evaluation(c);
-	wb_s.push(eval_wb);
-	wc_s.push(eval_wc);
+	w_i_b.push(eval_wb);
+	w_i_c.push(eval_wc);
 
 	let alpha = transcript.transform_challenge_to_field::<F>();
 	let beta = transcript.transform_challenge_to_field::<F>();

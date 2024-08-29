@@ -14,28 +14,28 @@ use transcript::transcription::Transcript;
 pub struct GKRProtocol;
 
 impl GKRProtocol {
-	pub fn prove<'a, F: PrimeField>(circuit: &'a Circuit, input: &'a Vec<F>) -> GKRProof<F> {
+	pub fn prove<F: PrimeField>(circuit: &Circuit, input: &[F]) -> GKRProof<F> {
 		let mut transcript = Transcript::new();
 		let mut sumcheck_proofs: Vec<ComposedSumcheckProof<F>> = Vec::new();
 		let mut w_i_b: Vec<F> = Vec::new();
 		let mut w_i_c: Vec<F> = Vec::new();
-
+	
 		let circuit_evaluation = circuit.evaluate(input);
 		let mut circuit_evaluation_layer_zero_pad = circuit_evaluation[0].clone();
 		circuit_evaluation_layer_zero_pad.push(F::zero());
-
-		let w_0_mle = w_mle(circuit_evaluation_layer_zero_pad.to_vec());
+	
+		let w_0_mle = w_mle(circuit_evaluation_layer_zero_pad);
 		transcript.append(&w_0_mle.to_bytes());
-
+	
 		let n_r: Vec<F> = transcript.sample_n_as_field_element(w_0_mle.number_of_variables);
-		let mut claimed_sum: F = w_0_mle.evaluation(&n_r);
-
-		let (add_mle_1, mult_mle_1) = circuit.add_i_mul_ext::<F>(0);
-		let w_1_mle = w_mle(circuit_evaluation[1].to_vec());
-
-		let (claimed, alph, bta, rb, rc) = perform_layer_one_prove_sumcheck(
-			&add_mle_1,
-			&mult_mle_1,
+		let  claimed_sum: F = w_0_mle.evaluation(&n_r);
+	
+		let (add_mle, mul_mle) = circuit.add_i_mul_ext::<F>(0);
+		let w_1_mle = w_mle(circuit_evaluation[1].clone());
+	
+		let (claimed, alps, bta, rb, rc) = perform_layer_one_prove_sumcheck(
+			&add_mle,
+			&mul_mle,
 			&w_1_mle,
 			&n_r,
 			&claimed_sum,
@@ -44,68 +44,65 @@ impl GKRProtocol {
 			&mut w_i_b,
 			&mut w_i_c,
 		);
-
-		claimed_sum = claimed;
-
-		let mut alpha: F = alph;
-		let mut beta: F = bta;
-		let mut r_b: Vec<F> = rb;
-		let mut r_c: Vec<F> = rc;
-
+	
+		let mut claimed_sum = claimed;
+		let mut alpha = alps;
+		let mut beta = bta;
+		let mut r_b = rb;
+		let mut r_c = rc;
+	
 		for layer_index in 2..circuit_evaluation.len() {
 			let (add_mle, mul_mle) = circuit.add_i_mul_ext::<F>(layer_index - 1);
-
+	
 			let add_rb_bc = add_mle.partial_evaluations(&r_b, &vec![0; r_b.len()]);
 			let mul_rb_bc = mul_mle.partial_evaluations(&r_b, &vec![0; r_b.len()]);
-
+	
 			let add_rc_bc = add_mle.partial_evaluations(&r_c, &vec![0; r_b.len()]);
 			let mul_rc_bc = mul_mle.partial_evaluations(&r_c, &vec![0; r_b.len()]);
-			let w_i_mle = w_mle(circuit_evaluation[layer_index].to_vec());
-
+			let w_i_mle = w_mle(circuit_evaluation[layer_index].clone());
+	
 			let wb = w_i_mle.clone();
 			let wc = w_i_mle;
-
+	
 			let wb_add_wc = wb.add_distinct(&wc);
 			let wb_mul_wc = wb.mul_distinct(&wc);
-
-			// alpha * add(r_b, b, c) + beta * add(r_c, b, c)
+	
 			let add_alpha_beta = (add_rb_bc * alpha) + (add_rc_bc * beta);
-			// alpha * mul(r_b, b, c) + beta * mul(r_c, b, c)
 			let mul_alpha_beta = (mul_rb_bc * alpha) + (mul_rc_bc * beta);
-
+	
 			let fbc_add_alpha_beta =
 				ComposedMultiLinearPolynomial::new(vec![add_alpha_beta, wb_add_wc]);
 			let fbc_mul_alpha_beta =
 				ComposedMultiLinearPolynomial::new(vec![mul_alpha_beta, wb_mul_wc]);
-
+	
 			let (sumcheck_proof, challenges) = MultiComposedSumcheckProver::prove_partial(
 				&vec![fbc_add_alpha_beta, fbc_mul_alpha_beta],
 				&claimed_sum,
 			)
 			.unwrap();
-
+	
 			transcript.append(&sumcheck_proof.to_bytes());
 			sumcheck_proofs.push(sumcheck_proof);
-
-			let (b, c) = challenges.split_at(&challenges.len() / 2);
-
-			let eval_wb = wb.evaluation(&b);
-			let eval_wc = wc.evaluation(&c);
+	
+			let (b, c) = challenges.split_at(challenges.len() / 2);
+	
+			let eval_wb = wb.evaluation(b);
+			let eval_wc = wc.evaluation(c);
 			w_i_b.push(eval_wb);
 			w_i_c.push(eval_wc);
-
+	
 			r_b = b.to_vec();
 			r_c = c.to_vec();
-
+	
 			alpha = transcript.transform_challenge_to_field::<F>();
 			beta = transcript.transform_challenge_to_field::<F>();
-
+	
 			claimed_sum = alpha * eval_wb + beta * eval_wc;
 		}
-
+	
 		GKRProof { sumcheck_proofs, w_i_b, w_i_c, w_0_mle }
 	}
-
+	
 	pub fn verify<F: PrimeField>(circuit: &Circuit, input: &[F], proof: &GKRProof<F>) -> bool {
 		if proof.sumcheck_proofs.len() != proof.w_i_b.len()
 			|| proof.sumcheck_proofs.len() != proof.w_i_c.len()
@@ -161,12 +158,12 @@ impl GKRProtocol {
 			let wb = proof.w_i_b[i];
 			let wc = proof.w_i_c[i];
 
-			let alph = transcript.transform_challenge_to_field::<F>();
+			let alps = transcript.transform_challenge_to_field::<F>();
 			let bta = transcript.transform_challenge_to_field::<F>();
 
-			claimed_sum = alph * wb + bta * wc;
+			claimed_sum = alps * wb + bta * wc;
 
-			alpha = alph;
+			alpha = alps;
 			beta = bta;
 		}
 

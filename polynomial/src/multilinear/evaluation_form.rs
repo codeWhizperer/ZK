@@ -3,7 +3,7 @@ use ark_ff::{BigInteger, PrimeField};
 use crate::multilinear::interface::MultiLinearPolynomialEvaluationFormTrait;
 
 use super::utils::{compute_number_of_variables, pick_pairs_with_index};
-use std::ops::{Add, AddAssign};
+use std::ops::{Add, AddAssign,Mul};
 
 #[derive(Debug, Clone, PartialEq, Default,Eq,Hash)]
 pub struct MultiLinearPolynomialEvaluationForm<F: PrimeField> {
@@ -173,6 +173,24 @@ impl<F: PrimeField> AddAssign for MultiLinearPolynomialEvaluationForm<F> {
 			self.evaluations[i] += other.evaluations[i];
 		}
 	}
+}
+
+impl<F: PrimeField> Mul<F> for MultiLinearPolynomialEvaluationForm<F> {
+    type Output = Self;
+
+    fn mul(self, rhs: F) -> Self::Output {
+        let lhs = self.evaluations;
+        let mut res = vec![];
+
+        for i in 0..lhs.len() {
+            res.push(lhs[i] * rhs)
+        }
+
+        Self {
+            number_of_variables: self.number_of_variables,
+            evaluations: res,
+        }
+    }
 }
 
 
