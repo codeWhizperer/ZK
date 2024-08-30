@@ -53,7 +53,7 @@ impl Circuit {
 		layer_index: usize,
 	) -> (MultiLinearPolynomialEvaluationForm<F>, MultiLinearPolynomialEvaluationForm<F>) {
 		let layers = &self.layers[layer_index];
-		let number_of_variables = Circuit::size_of_number_of_variable_at_each_layer(layer_index); // get number of variables at each layer
+		let number_of_variables = Circuit::size_of_number_of_variable_at_each_layer(layer_index);
 
 		let mut add_i_evaluations = vec![F::zero(); number_of_variables];
 		let mut mul_i_evaluations = vec![F::zero(); number_of_variables];

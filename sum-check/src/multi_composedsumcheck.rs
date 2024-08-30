@@ -118,7 +118,6 @@ impl MultiComposedSumcheckProver {
         }
         Ok((
             ComposedSumcheckProof {
-                // poly: poly.clone(),
                 round_polys,
                 sum: *sum,
             },
@@ -139,7 +138,6 @@ impl MultiComposedSumcheckVerifier {
         transcript.append(&composed_mle_to_bytes(&poly));
         let sub_claim = Self::verify_internal(&proof, &mut transcript)?;
 
-        // oracle check
         let mut poly_pe_sum = F::zero();
         for p in poly.iter() {
             poly_pe_sum += p.evaluation(&sub_claim.challenges.as_slice())
@@ -180,7 +178,6 @@ impl MultiComposedSumcheckVerifier {
             // update the sum
             claimed_sum = round_poly.evaluate(challenge);
         }
-        println!("challenges_at_verify={:?}", challenges);
 
         Ok(SubClaim {
             sum: claimed_sum,
