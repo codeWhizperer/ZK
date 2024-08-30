@@ -32,7 +32,7 @@ impl GKRProtocol {
 
 		let (add_mle, mul_mle) = circuit.add_i_mul_ext::<F>(0);
 		let w_1_mle = w_mle(circuit_evaluation[1].clone());
-		
+
 		// Run sumcheck on layer one
 		let (layer_one_claim, alps, bta, layer_one_rand_b, layer_one_rand_c) =
 			perform_layer_one_prove_sumcheck(
@@ -81,18 +81,18 @@ impl GKRProtocol {
 
 			// alpha * add(r_b, b, c) + beta * add(r_c, b, c)(w_i(b) + w_i(c))
 			let fbc_add = ComposedMultiLinearPolynomial::new(vec![add_alpha_beta, wb_add_wc]);
-			
+
 			// f(b, c) = alpha * add(r_b, b, c) + beta * add(r_c, b, c)(w_i(b) + w_i(c)) + alpha * mul(r_b, b, c) + beta * mul(r_c, b, c)(w_i(b) * w_i(c))
 			let fbc_mul = ComposedMultiLinearPolynomial::new(vec![mul_alpha_beta, wb_mul_wc]);
-			
-			 // this prover that the `claim` is the result of the evalution of the preivous layer
+
+			// this prover that the `claim` is the result of the evalution of the previous layer
 			let (sumcheck_proof, challenges) =
 				MultiComposedSumcheckProver::prove_partial(&vec![fbc_add, fbc_mul], &claim)
 					.unwrap();
 
 			transcript.append(&sumcheck_proof.to_bytes());
 			sumcheck_proofs.push(sumcheck_proof);
-
+			// split challenge between rand_b and rand_c
 			let (rand_b, rand_c) = challenges.split_at(challenges.len() / 2);
 
 			let eval_w_i_b = wb.evaluation(&rand_b.to_vec());
@@ -103,7 +103,7 @@ impl GKRProtocol {
 			alpha = transcript.transform_challenge_to_field::<F>();
 			beta = transcript.transform_challenge_to_field::<F>();
 
-			claim= alpha * eval_w_i_b + beta * eval_w_i_c;
+			claim = alpha * eval_w_i_b + beta * eval_w_i_c;
 		}
 
 		GKRProof { sumcheck_proofs, w_i_b, w_i_c, w_0_mle }
@@ -157,8 +157,10 @@ impl GKRProtocol {
 
 			let verify_subclaim =
 				MultiComposedSumcheckVerifier::verify_partial(&proof.sumcheck_proofs[i]).unwrap();
+			// split challenge between rand_b and rand_c
 
-			let (rand_b, rand_c) = verify_subclaim.challenges.split_at(&verify_subclaim.challenges.len() / 2);
+			let (rand_b, rand_c) =
+				verify_subclaim.challenges.split_at(&verify_subclaim.challenges.len() / 2);
 
 			last_rand_b = rand_b.to_vec();
 			last_rand_c = rand_c.to_vec();
@@ -174,7 +176,7 @@ impl GKRProtocol {
 			alpha = alps;
 			beta = bta;
 		}
-        // perform verification for the input layer
+		// perform verification for the input layer
 		let w_mle_input = w_mle(input.to_vec());
 
 		let w_mle_input_b = w_mle_input.evaluation(&last_rand_b);
