@@ -64,23 +64,20 @@ pub fn perform_layer_one_prove_sumcheck<F: PrimeField>(
 	transcript.append(&sumcheck_proof.to_bytes());
 	sumcheck_proofs.push(sumcheck_proof);
 
-	let (b, c) = challenges.split_at(&challenges.len() / 2);
+	let (rand_b, rand_c) = challenges.split_at(&challenges.len() / 2);
 
-	let eval_wb = wb.evaluation(b);
-	let eval_wc = wc.evaluation(c);
-	w_i_b.push(eval_wb);
-	w_i_c.push(eval_wc);
+	let eval_w_i_b = wb.evaluation(&rand_b.to_vec());
+	let eval_w_i_c = wc.evaluation(&rand_c.to_vec());
+	w_i_b.push(eval_w_i_b);
+	w_i_c.push(eval_w_i_c);
 
 	let alpha = transcript.transform_challenge_to_field::<F>();
 	let beta = transcript.transform_challenge_to_field::<F>();
 
-	let new_claim: F = alpha * eval_wb + beta * eval_wc;
+	let new_claim: F = alpha * eval_w_i_b + beta * eval_w_i_c;
 
 	let claimed_sum = new_claim;
-	let rb = b.to_vec();
-	let rc = c.to_vec();
-
-	(claimed_sum, alpha, beta, rb, rc)
+	(claimed_sum, alpha, beta, rand_b.to_vec(), rand_c.to_vec())
 }
 
 pub fn perform_layer_one_verify_sumcheck<F: PrimeField>(
@@ -88,12 +85,12 @@ pub fn perform_layer_one_verify_sumcheck<F: PrimeField>(
 	mul_mle: &MultiLinearPolynomialEvaluationForm<F>,
 	proof: &ComposedSumcheckProof<F>,
 	n_r: Vec<F>,
-	sum: &F,
+	layer_one_expected_sum: &F,
 	transcript: &mut Transcript,
-	wb: &F,
-	wc: &F,
+	w_b: &F,
+	w_c: &F,
 ) -> (bool, F) {
-	if *sum != proof.sum {
+	if *layer_one_expected_sum != proof.sum {
 		return (false, F::zero());
 	}
 
@@ -101,14 +98,14 @@ pub fn perform_layer_one_verify_sumcheck<F: PrimeField>(
 
 	let verify_subclaim = MultiComposedSumcheckVerifier::verify_partial(proof).unwrap();
 
-	let mut rbc = n_r;
-	rbc.extend_from_slice(&verify_subclaim.challenges);
+	let mut r_b_c = n_r;
+	r_b_c.extend_from_slice(&verify_subclaim.challenges);
 
-	let add_bc = add_mle.evaluation(&rbc);
-	let mul_bc = mul_mle.evaluation(&rbc);
+	let add_b_c = add_mle.evaluation(&r_b_c);
+	let mul_b_c = mul_mle.evaluation(&r_b_c);
 
-	let fbc_add = add_bc * (*wb + *wc);
-	let fbc_mul = mul_bc * (*wb * *wc);
+	let fbc_add = add_b_c * (*w_b + *w_c);
+	let fbc_mul = mul_b_c * (*w_b * *w_c);
 
 	let fbc_eval = fbc_add + fbc_mul;
 
@@ -119,7 +116,7 @@ pub fn perform_layer_one_verify_sumcheck<F: PrimeField>(
 	let alpha = transcript.transform_challenge_to_field::<F>();
 	let beta = transcript.transform_challenge_to_field::<F>();
 
-	let new_claim: F = alpha * wb + beta * wc;
+	let new_claim: F = alpha * w_b + beta * w_c;
 
 	(true, new_claim)
 }
