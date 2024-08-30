@@ -85,14 +85,14 @@ impl GKRProtocol {
 			// f(b, c) = alpha * add(r_b, b, c) + beta * add(r_c, b, c)(w_i(b) + w_i(c)) + alpha * mul(r_b, b, c) + beta * mul(r_c, b, c)(w_i(b) * w_i(c))
 			let fbc_mul = ComposedMultiLinearPolynomial::new(vec![mul_alpha_beta, wb_mul_wc]);
 			
-			 // this prover that the `claim` is the result of the evalution of the preivous layer
+			 // this prover that the `claim` is the result of the evalution of the previous layer
 			let (sumcheck_proof, challenges) =
 				MultiComposedSumcheckProver::prove_partial(&vec![fbc_add, fbc_mul], &claim)
 					.unwrap();
 
 			transcript.append(&sumcheck_proof.to_bytes());
 			sumcheck_proofs.push(sumcheck_proof);
-
+			// split challenge between rand_b and rand_c
 			let (rand_b, rand_c) = challenges.split_at(challenges.len() / 2);
 
 			let eval_w_i_b = wb.evaluation(&rand_b.to_vec());
