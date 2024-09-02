@@ -53,8 +53,8 @@ pub fn perform_layer_one_prove_sumcheck<F: PrimeField>(
 	let wb = w_mle.clone();
 	let wc = w_mle;
 
-	let wb_add_wc = wb.add_distinct(&wc);
-	let wb_mul_wc = wb.mul_distinct(&wc);
+	let wb_add_wc = wb.cartesian_add(&wc);
+	let wb_mul_wc = wb.cartesian_mul(&wc);
 
 	let add_fbc = ComposedMultiLinearPolynomial::new(vec![add_rbc, wb_add_wc]);
 	let mul_fbc = ComposedMultiLinearPolynomial::new(vec![mul_rbc, wb_mul_wc]);

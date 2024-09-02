@@ -10,8 +10,8 @@ pub trait MultiLinearPolynomialEvaluationFormTrait<F: PrimeField> {
 	fn split_poly(&mut self) -> MultiLinearPolynomialEvaluationForm<F> ;
 	fn is_zero(&self) -> bool;
 	fn interpolate(y_s: &[F]) -> Self;
-	fn add_distinct(&self, rhs: &Self) -> Self;
-	fn mul_distinct(&self, rhs: &Self) -> Self ;
+	fn cartesian_add(&self, rhs: &Self) -> Self;
+	fn cartesian_mul(&self, rhs: &Self) -> Self ;
 	fn partial_evaluations(&self, points: &[F], variable_indices: &Vec<usize>) -> Self;
 	fn sum_over_the_boolean_hypercube(&self) -> F ;
 }

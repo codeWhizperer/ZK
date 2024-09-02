@@ -70,10 +70,10 @@ impl GKRProtocol {
 			let wb = w_i_mle.clone();
 			let wc = w_i_mle;
 			// w_i(b) + w_i(c)
-			let wb_add_wc = wb.add_distinct(&wc);
+			let wb_add_wc = wb.cartesian_add(&wc);
 			// w_i(b) * w_i(c)
 
-			let wb_mul_wc = wb.mul_distinct(&wc);
+			let wb_mul_wc = wb.cartesian_mul(&wc);
 			// alpha * add(r_b, b, c) + beta * add(r_c, b, c)
 			let add_alpha_beta = (add_rb_bc * alpha) + (add_rc_bc * beta);
 			// alpha * mul(r_b, b, c) + beta * mul(r_c, b, c)
@@ -158,7 +158,6 @@ impl GKRProtocol {
 			let verify_subclaim =
 				MultiComposedSumcheckVerifier::verify_partial(&proof.sumcheck_proofs[i]).unwrap();
 			// split challenge between rand_b and rand_c
-			// println!("challenge:={:?}", verify_subclaim.challenges);
 			let (rand_b, rand_c) =
 				verify_subclaim.challenges.split_at(&verify_subclaim.challenges.len() / 2);
 
