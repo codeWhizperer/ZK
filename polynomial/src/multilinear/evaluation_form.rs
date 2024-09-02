@@ -60,7 +60,7 @@ impl<F: PrimeField> MultiLinearPolynomialEvaluationFormTrait<F>
 
         evaluation
     }
-	 fn add_distinct(&self, rhs: &Self) -> Self {
+	 fn cartesian_add(&self, rhs: &Self) -> Self {
         let mut new_evaluations = Vec::new();
         let repeat_sequence = rhs.evaluations.len();
 
@@ -73,7 +73,7 @@ impl<F: PrimeField> MultiLinearPolynomialEvaluationFormTrait<F>
         Self::new(new_evaluations)
     }
 
-     fn mul_distinct(&self, rhs: &Self) -> Self {
+     fn cartesian_mul(&self, rhs: &Self) -> Self {
         let mut new_evaluations = Vec::new();
         let repeat_sequence = rhs.evaluations.len();
 
