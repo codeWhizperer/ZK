@@ -158,7 +158,7 @@ impl GKRProtocol {
 			let verify_subclaim =
 				MultiComposedSumcheckVerifier::verify_partial(&proof.sumcheck_proofs[i]).unwrap();
 			// split challenge between rand_b and rand_c
-
+			// println!("challenge:={:?}", verify_subclaim.challenges);
 			let (rand_b, rand_c) =
 				verify_subclaim.challenges.split_at(&verify_subclaim.challenges.len() / 2);
 
