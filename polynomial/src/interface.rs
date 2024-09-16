@@ -1,4 +1,4 @@
-use crate::{ UnivariatePolynomial};
+use crate::univariate_polynomial::univariate::UnivariatePolynomial;
 use ark_ff::PrimeField;
 
 pub trait UnivariatePolynomialTrait<F: PrimeField> {

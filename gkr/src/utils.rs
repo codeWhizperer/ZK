@@ -11,6 +11,7 @@ use polynomial::{
 use sum_check::multi_composedsumcheck::MultiComposedSumcheckVerifier;
 use sum_check::multi_composedsumcheck::{ComposedSumcheckProof, MultiComposedSumcheckProver};
 use transcript::transcription::Transcript;
+//look into this.
 pub fn label_to_binary_to_decimal(a: usize, b: usize, c: usize) -> usize {
 	let a_shifted = a << 4;
 	let b_shifted = b << 2;

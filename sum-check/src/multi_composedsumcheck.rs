@@ -5,7 +5,7 @@ use polynomial::composed::interface::ComposedMultilinearInterface;
 use polynomial::composed::multilinear::ComposedMultiLinearPolynomial;
 use polynomial::interface::UnivariatePolynomialTrait;
 use transcript::transcription::Transcript;
-use polynomial::UnivariatePolynomial;
+use polynomial::univariate_polynomial::univariate::UnivariatePolynomial;
 // use polynomial::multilinear::evaluation_form::MultiLinearPolynomialEvaluationForm;
 
 
@@ -299,11 +299,11 @@ mod tests {
 
         let lhs_poly = ComposedMultiLinearPolynomial::new(vec![
             add_i.partial_evaluation(&Fq::from(2), &0),
-            w_b.add_distinct(&w_c),
+            w_b.cartesian_add(&w_c),
         ]);
         let rhs_poly = ComposedMultiLinearPolynomial::new(vec![
             mul_i.partial_evaluation(&Fq::from(2), &0),
-            w_b.mul_distinct(&w_c),
+            w_b.cartesian_mul(&w_c),
         ]);
 
         let multi_composed = vec![lhs_poly, rhs_poly];

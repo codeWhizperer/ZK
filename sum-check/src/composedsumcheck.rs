@@ -6,7 +6,7 @@ use polynomial::composed::multilinear::ComposedMultiLinearPolynomial;
 use polynomial::interface::UnivariatePolynomialTrait;
 use polynomial::multilinear::evaluation_form::MultiLinearPolynomialEvaluationForm;
 use polynomial::multilinear::interface::MultiLinearPolynomialEvaluationFormTrait;
-use polynomial::UnivariatePolynomial;
+use polynomial::univariate_polynomial::univariate::UnivariatePolynomial;
 use transcript::transcription::Transcript;
 
 use crate::interface::ComposedSumCheckInterface;
